@@ -1,11 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"logger/logger"
 )
 
 func main() {
-	fmt.Println("chndedaia")
-	logger.Log()
+	// log := logger.Logger{Level: 1, Message: "this message came from Level:"}
+	log := logger.GetInstance()
+	log.Level = 3
+	log.Message = "new logger created"
+	log.Log()
+	// logger.Log(logger.Logger{Level: 1, Message: "this message came from Level:"})
 }
