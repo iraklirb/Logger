@@ -1,6 +1,10 @@
 package logger
 
-import "fmt"
+import (
+	"strconv"
+
+	"github.com/fatih/color"
+)
 
 type LogLevel int
 
@@ -10,14 +14,6 @@ const (
 	Info
 	Error
 )
-
-func (log *Logger) Log() {
-
-	lg := GetLevelString(log.Level) + ":"
-	if log.Level > 0 {
-		fmt.Println(lg, log.Message, log.Level)
-	}
-}
 
 type Logger struct {
 	Level   int
@@ -30,17 +26,39 @@ func GetInstance() *Logger {
 	return log
 }
 
-func GetLevelString(logLevel int) string {
-	switch logLevel {
-	case 0:
+func (log *Logger) Log() {
+	lg := GetLevelString(log.Level) + ": " + log.Message + " " + strconv.Itoa(log.Level)
+	PrintWithColor(lg, log.Level)
+}
+
+func PrintWithColor(logMessage string, level int) {
+	gray := color.New(color.FgHiBlack)
+
+	switch level {
+	case Debug:
+		color.Green(logMessage)
+	case Warning:
+		color.Yellow(logMessage)
+	case Info:
+		gray.Println(logMessage)
+	case Error:
+		color.Red(logMessage)
+	default:
+		panic("incorrect log level")
+	}
+}
+
+func GetLevelString(level int) string {
+	switch level {
+	case Debug:
 		return "Debug"
-	case 1:
+	case Warning:
 		return "Warning"
-	case 2:
+	case Info:
 		return "Info"
-	case 3:
+	case Error:
 		return "Error"
 	default:
-		return "Debug"
+		panic("incorrect log level")
 	}
 }
