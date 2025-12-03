@@ -13,25 +13,57 @@ const (
 	Warning
 	Info
 	Error
+	MaxLevel
 )
 
 type Logger struct {
-	Level   int
-	Message string
+	level LogLevel
 }
 
-func GetInstance() *Logger {
+func GetInstance(logLevel LogLevel) *Logger {
+	if logLevel < 0 || logLevel >= MaxLevel {
+		panic("incorrect log level")
+	}
 	log := new(Logger)
-	// log.Level = 4
+	log.level = logLevel
 	return log
 }
 
-func (log *Logger) Log() {
-	lg := GetLevelString(log.Level) + ": " + log.Message + " " + strconv.Itoa(log.Level)
-	PrintWithColor(lg, log.Level)
+func (log *Logger) Debug(message string) {
+	if log.level > Debug {
+		return
+	}
+	lg := "Debug: " + message + strconv.Itoa(int(Debug))
+	PrintWithColor(lg, Debug)
 }
 
-func PrintWithColor(logMessage string, level int) {
+func (log *Logger) Warning(message string) {
+	if log.level > Warning {
+		return
+	}
+	lg := "Warning: " + message + strconv.Itoa(int(Warning))
+	PrintWithColor(lg, Warning)
+}
+
+// if (a || b) && c
+
+func (log *Logger) Info(message string) {
+	if log.level > Info {
+		return
+	}
+	lg := "Info: " + message + strconv.Itoa(int(Info))
+	PrintWithColor(lg, Info)
+}
+
+func (log *Logger) Error(message string) {
+	if log.level > Error {
+		return
+	}
+	lg := "Error: " + message + strconv.Itoa(int(Error))
+	PrintWithColor(lg, Error)
+}
+
+func PrintWithColor(logMessage string, level LogLevel) {
 	gray := color.New(color.FgHiBlack)
 
 	switch level {
@@ -43,21 +75,6 @@ func PrintWithColor(logMessage string, level int) {
 		gray.Println(logMessage)
 	case Error:
 		color.Red(logMessage)
-	default:
-		panic("incorrect log level")
-	}
-}
-
-func GetLevelString(level int) string {
-	switch level {
-	case Debug:
-		return "Debug"
-	case Warning:
-		return "Warning"
-	case Info:
-		return "Info"
-	case Error:
-		return "Error"
 	default:
 		panic("incorrect log level")
 	}
